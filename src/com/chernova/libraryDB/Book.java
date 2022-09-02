@@ -1,48 +1,28 @@
 package com.chernova.libraryDB;
 
-import java.util.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class Book {
 
-    private static int counter = 0;
-
     private int id;
     private String title;
     private String author;
-    private String text;
-    private String isbn;
     private Genre genre;
-    private String publishDate;
-    private Date localDate;
 
     public Book() {
-        this.id = ++counter;
-    }
 
-    public Book(String title, String author, String text, String isbn, Genre genre, String publishDate, Date localDate) {
-        this.id = ++counter;
-        this.title = title;
-        this.author = author;
-        this.text = text;
-        this.isbn = isbn;
-        this.genre = genre;
-        this.publishDate = publishDate;
-        this.localDate = localDate;
     }
 
     public Book(int id, String title, String author, Genre genre) {
-      //  this.id = ++counter;
         this.id = id;
         this.title = title;
         this.author = author;
         this.genre = genre;
     }
 
-
-    public int getId() {
-        return id;
-    }
 
     public String getTitle() {
         return title;
@@ -60,22 +40,6 @@ public class Book {
         this.author = author;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
     public Genre getGenre() {
         return genre;
     }
@@ -84,20 +48,17 @@ public class Book {
         this.genre = genre;
     }
 
-    public String getPublishDate() {
-        return publishDate;
-    }
 
-    public void setPublishDate(String publishDate) {
-        this.publishDate = publishDate;
-    }
-
-    public Date getLocalDate() {
-        return localDate;
-    }
-
-    public void setLocalDate(Date localDate) {
-        this.localDate = new Date();
+    public static int isExistBook(int id) throws SQLException {
+        PreparedStatement ps = DBConnection.con.prepareStatement("SELECT * FROM books WHERE id = ?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        // если записи с таким id нет, то вызвать isExistBook еще раз
+        if (!rs.next()) {
+            id = Menu.sc.nextInt();
+            isExistBook(id);
+        }
+        return id;
     }
 
 
@@ -106,18 +67,18 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return id == book.id && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(text, book.text) && Objects.equals(isbn, book.isbn) && Objects.equals(genre, book.genre) && Objects.equals(publishDate, book.publishDate) && Objects.equals(localDate, book.localDate);
+        return id == book.id && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(genre, book.genre);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, author, text, isbn, genre, publishDate, localDate);
+        return Objects.hash(id, title, author, genre);
     }
 
     @Override
     public String toString() {
-      String str = String.format("\n%-3s %-30s %-20s %-10s", id,title, author, genre.getGenre());
-      return str;
+        String str = String.format("\n%-3s %-30s %-20s %-10s", id, title, author, genre.getGenre());
+        return str;
 
     }
 }

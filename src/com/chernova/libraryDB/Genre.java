@@ -1,6 +1,5 @@
 package com.chernova.libraryDB;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,17 +14,13 @@ public class Genre {
     public Genre() {
     }
 
-     Genre(int id, String genre) {
+    Genre(int id, String genre) {
         this.id = id;
         this.genre = genre;
     }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getGenre() {
@@ -48,15 +43,17 @@ public class Genre {
     }
 
 
-
     public static Genre getGenreById(int id) throws SQLException {
         PreparedStatement ps = DBConnection.con.prepareStatement("SELECT * FROM genres WHERE id = ?");
         ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
-        rs.next();
-        return new Genre(rs.getInt(1), rs.getString(2));
-    }
 
+        if (rs.next()) {
+            return new Genre(rs.getInt(1), rs.getString(2));
+        } else { // если записи с таким id нет, то  вернуть пустой жанр
+            return new Genre();
+        }
+    }
 
 
     @Override
