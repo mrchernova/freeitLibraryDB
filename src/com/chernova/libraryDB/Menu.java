@@ -41,44 +41,13 @@ public class Menu {
             switch (option) {
 
                 case 1:
-          /*          System.out.println(ANSI_YELLOW + INNER_MENU + ANSI_RESET);
-                    int nextOption = -1;
-                    boolean done = false;
-                    while (!done) {
-                        try {
-                            nextOption = sc.nextInt();
-                        } catch (InputMismatchException e) {
-                            System.out.println("Введите число");
-                            sc.next();
-                        }
-                        switch (nextOption) {
-                            case 1:
-                              //  Collections.sort(Library.list);
-                                done = true;
-                                break;
-                            case 2:
-                                Collections.reverse(Library.list);
-                                done = true;
-                                break;
-                            case 3:
-                            //    Collections.sort(Library.list, new Book());
-                                done = true;
-                                break;
-                            default:
-                                System.out.println("Выберите номер из списка");
-                                break;
-                        }
-                    }
-                    if (done) {
-                        option = -1;
-              */          System.out.print("Список книг:");
+                        System.out.print("Список книг:");
                         System.out.println(Library.getAllBooks().toString().replaceAll("^\\[|,|\\]$", ""));
-                    //System.out.println(Library.getAllBooks());
                         break;
-              //      }
 
 
                 case 2:
+                  Library.addBook();
                /*     Book newBook = new Book();
                     System.out.println("Заполните все поля для добавления книги");
 

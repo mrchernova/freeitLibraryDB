@@ -116,8 +116,7 @@ public class Book {
 
     @Override
     public String toString() {
-    //  String str = String.format("\nid = %-5s title = %-30s author = %-20s genre = %-10s", id,title, author, genre);
-      String str = String.format("\n%-5s %-30s %-20s %-10s", id,title, author, genre);
+      String str = String.format("\n%-3s %-30s %-20s %-10s", id,title, author, genre.getGenre());
       return str;
 
     }

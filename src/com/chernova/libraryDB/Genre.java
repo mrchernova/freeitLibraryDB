@@ -1,14 +1,18 @@
 package com.chernova.libraryDB;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Genre {
-
     private int id;
     private String genre;
 
     public Genre() {
-
     }
 
      Genre(int id, String genre) {
@@ -32,6 +36,29 @@ public class Genre {
         this.genre = genre;
     }
 
+
+    public static List<Genre> getAllGenres() throws SQLException {
+        ResultSet rs = DBConnection.postman.executeQuery("SELECT * FROM genres");
+        List<Genre> genreList = new ArrayList<>();
+        while (rs.next()) {
+            Genre b = new Genre(rs.getInt(1), rs.getString(2));
+            genreList.add(b);
+        }
+        return genreList;
+    }
+
+
+
+    public static Genre getGenreById(int id) throws SQLException {
+        PreparedStatement ps = DBConnection.con.prepareStatement("SELECT * FROM genres WHERE id = ?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        return new Genre(rs.getInt(1), rs.getString(2));
+    }
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,14 +72,9 @@ public class Genre {
         return Objects.hash(id, genre);
     }
 
-    //    public static void printGenre() {
-//        for (Genre g : Genre.values()) {
-//            System.out.println(g.id + ". " + g.genre);
-//        }
-//    }
-
     @Override
     public String toString() {
-        return genre;
+        String str = String.format("\n%-3s %-10s", id, genre);
+        return str;
     }
 }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,98 +31,75 @@ public class Library {
         List<Book> bookList = new ArrayList<>();
 
         while (rs.next()) {
-            Book b = new Book(rs.getInt(1), rs.getString(2), rs.getString(3), getGenreById(rs.getInt(4),DBConnection.con));
-
+            Book b = new Book(rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    Genre.getGenreById(rs.getInt(4)));  // в этот booklist выводится только genre_id. надо объединять таблицы при выводе
             bookList.add(b);
         }
-        System.out.format(Menu.ANSI_YELLOW + "\n%-5s %-30s %-20s %-10s", "id", "title", "author", "genre" + Menu.ANSI_RESET); // заголовки для вывода всех записей
+        System.out.format(Menu.ANSI_YELLOW + "\n%-3s %-30s %-20s %-10s", "id", "title", "author", "genre" + Menu.ANSI_RESET); // заголовки для вывода всех записей
         return bookList;
     }
+    // read <<
 
-    private static Genre getGenreById(int id, Connection conn) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT * FROM genres WHERE id = ?");
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        return new Genre(rs.getInt(1), rs.getString(2));
+
+
+// lineIn проверяет введенною строку на пустоту
+    public static String newRecord = "";
+    public static String lineIn() {
+        newRecord = Menu.sc.nextLine();
+        while (newRecord.isEmpty()) {
+            newRecord = Menu.sc.nextLine();
+        }
+        return newRecord;
     }
-// read <<
-
 
     // create >>
-//    public static void addBook(Book book) throws SQLException {
-//
-//        Book newBook = new Book();
-//        System.out.println("Заполните все поля для добавления книги");
-//
-//        System.out.print("title: ");
-//        String tmp = sc.nextLine();
-//        while (tmp.isEmpty()) {
-//            tmp = sc.nextLine();
-//        }
-//        newBook.setTitle(tmp);
-//
-//
-//        System.out.print("text: ");
-//        tmp = sc.nextLine();
-//        while (tmp.isEmpty()) {
-//            tmp = sc.nextLine();
-//        }
-//        newBook.setText(tmp);
-//
-//        System.out.println("genre: ");
-//        System.out.print(ANSI_YELLOW);
-//        Genre.printGenre();
-//        System.out.print(ANSI_RESET);
-//        boolean readyToSet = false;
-//        while (!readyToSet) {
-//            try {
-//                readyToSet = true;
-//                int genreAdd = sc.nextInt();
-//                newBook.setGenre(Genre.values()[genreAdd - 1]);
-//            } catch (InputMismatchException e) {
-//                System.out.println("Введите номер жанра");
-//                readyToSet = false;
-//                sc.next();
-//            } catch (ArrayIndexOutOfBoundsException e) {
-//                System.out.println("Выберите жанр из списка");
-//                readyToSet = false;
-//            }
-//        }
+    public static void addBook() throws SQLException {
+
+        Book newBook = new Book();
+        System.out.println("Заполните все поля для добавления книги");
+        System.out.print("title: ");
+        newBook.setTitle(lineIn()); // lineIn проверяет введенною строку на пустоту
+
+        System.out.print("author: ");
+        newBook.setAuthor(lineIn());
+
+        System.out.print("Выберите жанр из списка");
+        System.out.format(Menu.ANSI_YELLOW + "\n%-3s %-10s", "id", "genre" + Menu.ANSI_RESET); // заголовки для вывода всех записей
+        System.out.println(Genre.getAllGenres().toString().replaceAll("^\\[|,|\\]$", ""));
 
 
+// как было >>
+        System.out.println("genre: ");
 
+        boolean readyToSet = false;
+        while (!readyToSet) {
+            try {
+                readyToSet = true;
+                int genreAdd = Menu.sc.nextInt();
+                newBook.setGenre(Genre.getGenreById(genreAdd));
+            } catch (InputMismatchException e) {
+                System.out.println("Введите номер жанра");
+                readyToSet = false;
+                Menu.sc.next();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Выберите жанр из списка");
+                readyToSet = false;
+            }
+        }
+// как было <<
 
-//        Genre genre = new Genre();
-//        genre.setGenre("тестовый жанр");
-//
-//        PreparedStatement psGenre = DBConnection.con.prepareStatement("insert into genres (genre) values (?)", Statement.RETURN_GENERATED_KEYS);
-//        psGenre.setString(1, genre.getGenre());
-//        psGenre.executeUpdate();
-//        ResultSet resSetGenre = psGenre.getGeneratedKeys();
-//        if(resSetGenre.next())
-//        {
-//            genre.setId(resSetGenre.getInt(1));
-//        }
-
-//        Book newBook = new Book();
-//        newBook.setTitle("test book");
-//        //   newBook.setGenre(genre);
-//        newBook.setAuthor("Author 1");
-//        System.out.println("*****");
-//        System.out.println(newBook);
-//        System.out.println("***** DB Insertion");
-//
-//        PreparedStatement ps = DBConnection.con.prepareStatement("insert into books (title, author, genre_id) values (?, ?, ?)");
-//        ps.setString(1, newBook.getTitle());
-//        ps.setString(2, newBook.getAuthor());
-//        ps.setInt(3, newBook.getGenre().getId());
-//        ps.executeUpdate();
 
     }
+
+
+}
 // create <<
 
 
+//???
+/*
 //    public Book getBook(int id) {
 //        return books.stream()
 //                .filter(b -> b.getId() == id)
@@ -156,7 +134,4 @@ public class Library {
 //                .orElseThrow(() -> new IllegalArgumentException(String.format("Provided id not found %s", id)));
 //        return books.remove(found);
 //    }
-
-
-
-
+*/

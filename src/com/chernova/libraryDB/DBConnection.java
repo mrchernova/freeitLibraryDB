@@ -6,9 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBConnection {
-    // connect DB
-    public static Connection con;
 
+    public static Connection con;
     static {
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "root");
@@ -18,7 +17,6 @@ public class DBConnection {
     }
 
     public static Statement postman;
-
     static {
         try {
             postman = con.createStatement();
