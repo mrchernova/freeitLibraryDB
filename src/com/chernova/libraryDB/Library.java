@@ -15,10 +15,10 @@ public class Library {
         ResultSet rs = postman.executeQuery("SELECT * FROM books");
         List<Book> bookList = new ArrayList<>();
         while (rs.next()) {
-            Book b = new Book(rs.getInt(1),
-                    rs.getString(2),
-                    rs.getString(3),
-                    getGenreById(rs.getInt(4)));
+            Book b = new Book(rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("author"),
+                    getGenreById(rs.getInt("genre")));
             bookList.add(b);
         }
         postman.close();
@@ -153,7 +153,7 @@ public class Library {
         ResultSet rs = postman.executeQuery("SELECT * FROM genres");
         List<Genre> genreList = new ArrayList<>();
         while (rs.next()) {
-            Genre b = new Genre(rs.getInt(1), rs.getString(2));
+            Genre b = new Genre(rs.getInt("id"), rs.getString("genre"));
             genreList.add(b);
         }
         postman.close();
