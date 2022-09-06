@@ -1,10 +1,5 @@
 package com.chernova.libraryDB;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Genre {
@@ -29,30 +24,6 @@ public class Genre {
 
     public void setGenre(String genre) {
         this.genre = genre;
-    }
-
-
-    public static List<Genre> getAllGenres() throws SQLException {
-        ResultSet rs = DBConnection.postman.executeQuery("SELECT * FROM genres");
-        List<Genre> genreList = new ArrayList<>();
-        while (rs.next()) {
-            Genre b = new Genre(rs.getInt(1), rs.getString(2));
-            genreList.add(b);
-        }
-        return genreList;
-    }
-
-
-    public static Genre getGenreById(int id) throws SQLException {
-        PreparedStatement ps = DBConnection.con.prepareStatement("SELECT * FROM genres WHERE id = ?");
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            return new Genre(rs.getInt(1), rs.getString(2));
-        } else { // если записи с таким id нет, то  вернуть пустой жанр
-            return new Genre();
-        }
     }
 
 

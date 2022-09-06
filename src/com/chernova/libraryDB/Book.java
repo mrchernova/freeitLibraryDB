@@ -1,8 +1,5 @@
 package com.chernova.libraryDB;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Objects;
 
 public class Book {
@@ -46,19 +43,6 @@ public class Book {
 
     public void setGenre(Genre genre) {
         this.genre = genre;
-    }
-
-
-    public static int isExistBook(int id) throws SQLException {
-        PreparedStatement ps = DBConnection.con.prepareStatement("SELECT * FROM books WHERE id = ?");
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
-        // если записи с таким id нет, то вызвать isExistBook еще раз
-        if (!rs.next()) {
-            id = Menu.sc.nextInt();
-            isExistBook(id);
-        }
-        return id;
     }
 
 

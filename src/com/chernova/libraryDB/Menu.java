@@ -46,7 +46,7 @@ public class Menu {
                     System.out.print("id книги для редактирования: ");
                     try {
                         int idEdit = sc.nextInt();
-                        int verifiedId = Book.isExistBook(idEdit);
+                        int verifiedId = Library.isExistBook(idEdit);
                         Library.updateBook(verifiedId);
                     } catch (InputMismatchException e) {
                         System.out.println(ANSI_RED + "Книга не найдена" + ANSI_RESET);
@@ -58,7 +58,7 @@ public class Menu {
                     System.out.println("id книги для удаления:");
                     try {
                         int idDelete = sc.nextInt();
-                        int verifiedId = Book.isExistBook(idDelete);
+                        int verifiedId = Library.isExistBook(idDelete);
                         Library.deleteBook(verifiedId);
                     } catch (InputMismatchException e) {
                         System.out.println(ANSI_RED + "Книга не найдена" + ANSI_RESET);
@@ -69,6 +69,7 @@ public class Menu {
 
                 case 0:
                     sc.close();
+                    DBConnection.connection.close();
                     System.exit(0);
 
                 default:
