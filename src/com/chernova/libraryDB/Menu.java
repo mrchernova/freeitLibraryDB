@@ -27,7 +27,7 @@ public class Menu {
             try {
                 option = sc.nextInt();
             } catch (InputMismatchException e) {
-                System.out.println("Введите число");
+                System.out.println(Library.REQUEST_TO_CHOOSE_NUMBER);
                 sc.next();
             }
 
@@ -43,7 +43,7 @@ public class Menu {
                     break;
 
                 case 3:
-                    System.out.print("id книги для редактирования: ");
+                    System.out.print(Library.ENTER_ID);
                     try {
                         int idEdit = sc.nextInt();
                         int verifiedId = Library.isExistBook(idEdit);
@@ -55,7 +55,7 @@ public class Menu {
                     break;
 
                 case 4:
-                    System.out.println("id книги для удаления:");
+                    System.out.println(Library.ENTER_ID);
                     try {
                         int idDelete = sc.nextInt();
                         int verifiedId = Library.isExistBook(idDelete);
@@ -73,7 +73,7 @@ public class Menu {
                     System.exit(0);
 
                 default:
-                    System.out.println("Выберите номер из списка");
+                    System.out.println(Library.REQUEST_TO_CHOOSE_NUMBER_FROM_LIST);
                     break;
             }
         }
