@@ -5,7 +5,11 @@ import java.util.List;
 import java.sql.*;
 
 
-public class Library {
+public class Library implements AutoCloseable {
+
+    @Override
+    public void close() throws Exception {
+    }
 
     public Library() {
     }
@@ -32,25 +36,24 @@ public class Library {
     public static final String ENTER_AUTHOR = "author: ";
     public static final String ENTER_GENRE = "genre: ";
 
-    
-
-
 
     public static List<Book> getAllBooks() throws SQLException {
-        Statement postman = DBConnection.connection.createStatement();
-        ResultSet rs = postman.executeQuery(SELECT_BOOKS);
-        List<Book> bookList = new ArrayList<>();
-        while (rs.next()) {
-            Book b = new Book(rs.getInt(ID),
-                    rs.getString(TITLE),
-                    rs.getString(AUTHOR),
-                    getGenreById(rs.getInt(GENRE)));
-            bookList.add(b);
-        }
-        postman.close();
+        try (Statement postman = DBConnection.connection.createStatement();
+             ResultSet rs = postman.executeQuery(SELECT_BOOKS);) {
 
-        System.out.format(Menu.ANSI_YELLOW + "\n%-3s %-30s %-20s %-10s", ID, TITLE, AUTHOR, GENRE + Menu.ANSI_RESET); // заголовки для вывода всех записей
-        return bookList;
+            List<Book> bookList = new ArrayList<>();
+
+            while (rs.next()) {
+                Book b = new Book(rs.getInt(ID),
+                        rs.getString(TITLE),
+                        rs.getString(AUTHOR),
+                        getGenreById(rs.getInt(GENRE)));
+                bookList.add(b);
+            }
+
+            System.out.format(Menu.ANSI_YELLOW + "\n%-3s %-30s %-20s %-10s", ID, TITLE, AUTHOR, GENRE + Menu.ANSI_RESET); // заголовки для вывода всех записей
+            return bookList;
+        }
     }
 
 
@@ -98,12 +101,12 @@ public class Library {
         }
 
         // если все данные получены, они добавляются в БД
-        PreparedStatement ps = DBConnection.connection.prepareStatement(INSERT_BOOK);
-        ps.setString(1, newBook.getTitle());
-        ps.setString(2, newBook.getAuthor());
-        ps.setInt(3, newBook.getGenre().getId());
-        ps.executeUpdate();
-        ps.close();
+        try (PreparedStatement ps = DBConnection.connection.prepareStatement(INSERT_BOOK);) {
+            ps.setString(1, newBook.getTitle());
+            ps.setString(2, newBook.getAuthor());
+            ps.setInt(3, newBook.getGenre().getId());
+            ps.executeUpdate();
+        }
     }
 
 
@@ -141,76 +144,70 @@ public class Library {
         }
 
         // если все данные получены, они добавляются в БД
-        PreparedStatement ps = DBConnection.connection.prepareStatement(UPDATE_BOOK);
-        ps.setString(1, updateBook.getTitle());
-        ps.setString(2, updateBook.getAuthor());
-        ps.setInt(3, updateBook.getGenre().getId());
-        ps.setInt(4, id);
-        ps.executeUpdate();
-        ps.close();
+        try (PreparedStatement ps = DBConnection.connection.prepareStatement(UPDATE_BOOK);) {
+            ps.setString(1, updateBook.getTitle());
+            ps.setString(2, updateBook.getAuthor());
+            ps.setInt(3, updateBook.getGenre().getId());
+            ps.setInt(4, id);
+            ps.executeUpdate();
+        }
     }
 
-    public static void deleteBook(int id) {
-        PreparedStatement ps = null;
-        try {
-            ps = DBConnection.connection.prepareStatement(DELETE_BOOK);
+    public static void deleteBook(int id) throws SQLException {
+        try (PreparedStatement ps = DBConnection.connection.prepareStatement(DELETE_BOOK);) {
             ps.setInt(1, id);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                ps.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
 
     public static int isExistBook(int id) throws SQLException {
+        try (PreparedStatement ps = DBConnection.connection.prepareStatement(SELECT_BOOK);) {
+            ps.setInt(1, id);
 
-        PreparedStatement ps = DBConnection.connection.prepareStatement(SELECT_BOOK);
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
-        // если записи с таким id нет, то вызвать isExistBook еще раз
-        if (!rs.next()) {
-            id = Menu.sc.nextInt();
-            isExistBook(id);
+            try(ResultSet rs = ps.executeQuery();) {
+
+                if (!rs.next()) {
+                    id = Menu.sc.nextInt();
+                    isExistBook(id);
+                }
+            }
         }
-        ps.close();
         return id;
     }
 
 
     public static List<Genre> getAllGenres() throws SQLException {
 
-        Statement postman = DBConnection.connection.createStatement();
+        try (Statement postman = DBConnection.connection.createStatement();
+             ResultSet rs = postman.executeQuery(SELECT_GENRES);) {
 
-        ResultSet rs = postman.executeQuery(SELECT_GENRES);
-        List<Genre> genreList = new ArrayList<>();
-        while (rs.next()) {
-            Genre b = new Genre(rs.getInt(ID), rs.getString(GENRE));
-            genreList.add(b);
+            List<Genre> genreList = new ArrayList<>();
+
+            while (rs.next()) {
+                Genre b = new Genre(rs.getInt(ID), rs.getString(GENRE));
+                genreList.add(b);
+            }
+
+            return genreList;
         }
-        postman.close();
-        return genreList;
     }
 
 
     public static Genre getGenreById(int id) throws SQLException {
 
-        PreparedStatement ps = DBConnection.connection.prepareStatement(SELECT_GENRE);
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
+        try (PreparedStatement ps = DBConnection.connection.prepareStatement(SELECT_GENRE);) {
+            ps.setInt(1, id);
 
-        if (rs.next()) {
-            return new Genre(rs.getInt(1), rs.getString(2));
-        } else { // если записи с таким id нет, то  вернуть пустой жанр
-            ps.close();
-            return new Genre();
+            try (ResultSet rs = ps.executeQuery();) {
+
+                if (rs.next()) {
+                    return new Genre(rs.getInt(1), rs.getString(2));
+                } else {
+                    return new Genre();
+                }
+            }
         }
     }
-
 
 }
