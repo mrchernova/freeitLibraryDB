@@ -6,14 +6,14 @@ public class Book {
 
     private int id;
     private String title;
-    private String author;
+    private Author author;
     private Genre genre;
 
     public Book() {
 
     }
 
-    public Book(int id, String title, String author, Genre genre) {
+    public Book(int id, String title, Author author, Genre genre) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -29,11 +29,11 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 
@@ -61,7 +61,7 @@ public class Book {
 
     @Override
     public String toString() {
-        String str = String.format("\n%-3s %-30s %-20s %-10s", id, title, author, genre.getGenre());
+        String str = String.format("\n%-3s %-30s %-20s %-10s", id, title, author.getAuthor(), genre.getGenre());
         return str;
 
     }
